@@ -6,6 +6,7 @@ const typeDefs = gql`
     }
     type Mutation {
         signup(input:NuevoUsuario):AuthPayload
+        singin(input:Credentials):AuthSignPayload
     }
     type User {
         name:String
@@ -19,6 +20,17 @@ const typeDefs = gql`
         email:String
         password:String
         
+    }
+    input Credentials {
+        email:String!
+        password:String!
+    }
+    type AuthSignPayload {
+        token:String!
+        signError: [SignError!]!
+    }
+    type SignError{
+        message:String
     }
     type AuthPayload {
         userErrors: [UserErrors!]!

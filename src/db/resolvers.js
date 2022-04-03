@@ -1,6 +1,17 @@
 const { PrismaClient} = require("@prisma/client")
 const prisma = new PrismaClient()
 const bcryptjs = require("bcryptjs")
+require('dotenv').config({ path: '.env' });
+
+const jwt = require('jsonwebtoken')
+
+const crearToken = (usuario, secreta, expiresIn) => {
+    // console.log(usuario);
+    const { id, email,nombre, apellido } = usuario;
+
+    return jwt.sign( { id, email, nombre, apellido }, secreta, { expiresIn } )
+}
+
 
 const resolvers = {
     Mutation:{
@@ -35,6 +46,32 @@ const resolvers = {
             return {
                 userErrors:[],
                 user
+            }
+
+
+
+        },
+        singin : async (_,{input}) => {
+            const {email,password} = input
+            //Validar si el usuario existe
+            const user = await prisma.user.findUnique({
+                where:{
+                    email
+                },
+            });
+            if(!user){
+                throw new Error("El usuario no existe")
+            }
+
+             const passwordCorrecto = await bcryptjs.compare( password, user.password );
+
+            if(!passwordCorrecto){
+                throw new Error("La clave no es correcta")
+            }
+
+            return {
+               
+                token: crearToken(user,process.env.SECRETA, '8h')
             }
 
 
