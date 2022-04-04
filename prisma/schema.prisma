@@ -17,7 +17,8 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+  autos     Auto[]
+  cliente   Cliente[]
 }
 model Auto {
   id          Int     @id @default(autoincrement())
@@ -26,15 +27,22 @@ model Auto {
   descripcion String
   precio      Int
   authorId     Int     
-  author       Admin   @relation(fields: [authorId],references: [id])
+  author       User   @relation(fields: [authorId],references: [id])
 }
-model Admin {
-  id        Int     @id  @default(autoincrement())
-  email     String  @unique
+model Pedidos {
+  id        Int    @id  @default(autoincrement())
+  titulo    String
+  contenido String
+  precio    Int
+  clienteId Int
+  cliente Cliente  @relation(fields: [clienteId], references: [id])
+}
+model Cliente {
+  id        Int      @id @default(autoincrement())
   name      String
   apellido  String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  autos     Auto[]
+  email     String    @unique
+  pedidos   Pedidos[]
+  userId    Int       
+  user      User  @relation(fields: [userId], references: [id])
 }

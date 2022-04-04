@@ -159,6 +159,71 @@ const resolvers = {
                 userErrors:[],
                 auto
             }
+        },
+        crearPedido: async (_,{input}) => {
+            const {titulo,contenido,precio} = input
+            if(!titulo && !contenido && !precio){
+                return{
+                    userErrors:[{
+                        message:"Faltan datos"
+                    }]
+                }
+            }
+
+            return {
+                userErrors:[],
+                pedidos: prisma.pedidos.create({
+                    data:{
+                        contenido,
+                        precio,
+                        titulo,
+                        clienteId:1
+                    }
+                })
+            }
+        },
+        actualizarPedido: async(_,{pedidoId,input}) => {
+            const {titulo,contenido,precio} = input
+            const buscarPedido = await prisma.pedidos.findUnique({
+                where:{
+                    id: Number(pedidoId)
+                }
+            })
+            if(!buscarPedido){
+                return{
+                    userErrors:[{
+                        message:"Pedido no encontrado"
+                    }]
+                }
+            }
+            let payloadUpdate = {
+                titulo,contenido,precio
+            }
+            return{
+                userErrors:[],
+                pedidos: prisma.pedidos.update({
+                    data:{
+                        ...payloadUpdate
+                    },
+                    where:{
+                        id:Number(pedidoId)
+                    }
+                })
+            }  
+        },
+        eliminarPedido:async(_,{pedidoId}) => {
+            const buscarPedido = await prisma.pedidos.findUnique({
+                where:{
+                    id: Number(pedidoId)
+                }
+            })
+            if(!buscarPedido){
+                return{
+                    userErrors:[{
+                        message: "Pedido no existente"
+                    }]
+                }
+            }
         }
         
     },

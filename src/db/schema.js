@@ -13,6 +13,9 @@ const typeDefs = gql`
         actualizarAuto(autosId:ID!,input:InputAuto!):AutoPayload
         eliminarAuto(autosId:ID!): AutoPayload
 
+        crearPedido(input:InputPedido):PedidoPayload
+        actualizarPedido(pedidoId:ID,input:InputPedido):PedidoPayload
+        eliminarPedido(pedidoId:ID):PedidoPayload
     }
     type User {
         id: ID!
@@ -20,14 +23,25 @@ const typeDefs = gql`
         apellido:String!
         email:String!
         password:String!
+        autos: [Auto]
     }
-    type Admin {
-        id:         ID!
-        name:       String!
-        email:      String!
-        apellido:   String!
-        password:   String!
-        autos:      [Auto]
+    type Cliente{
+        id:ID!
+        name:String!
+        apellido:String!
+        telefono:String!
+        empresa:String!
+        email:String!
+        pedidos: [Pedidos]
+        vendedor:ID
+        
+    }
+    type Pedidos {
+        id:ID
+        titulo:String
+        contenido:String
+        precio:Int
+        cliente:Cliente
     }
     type Auto{
         id:         ID!
@@ -35,7 +49,7 @@ const typeDefs = gql`
         imagen:     String! 
         descripcion:String!
         precio:     String!
-        admin:      Admin
+        user:      User
     
     }
     input InputAuto{
@@ -43,6 +57,11 @@ const typeDefs = gql`
         descripcion:String!
         imagen:     String!
         precio:     Int!
+    }
+    input InputPedido{
+        titulo:String
+        contenido:String
+        precio:Int
     }
 
     input NuevoUsuario {
@@ -73,6 +92,10 @@ const typeDefs = gql`
     type AutoPayload {
         userErrors: [UserErrors!]!
         auto:Auto
+    }
+    type PedidoPayload {
+        userErrors: [UserErrors!]!
+        pedidos:Pedidos
     }
     `
     module.exports = typeDefs
