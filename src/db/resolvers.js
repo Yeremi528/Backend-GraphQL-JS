@@ -17,6 +17,16 @@ const crearToken = (usuario, secreta, expiresIn) => {
 
 
 const resolvers = {
+    Query:{
+        hello:() => {"hello"},
+        auto: async() =>  {
+            return prisma.auto.findMany({
+                where:{
+                    authorId:1
+                }
+            })
+        }
+    },
     Mutation:{
         signup : async (_,{input}) => {
             const {name,apellido,email,password} = input
@@ -85,12 +95,70 @@ const resolvers = {
                 titulo,
                 descripcion,
                 imagen,
-                precio
+                precio,
             }})
            return {
                userErrors:[],
                auto
            }
+        },
+        actualizarAuto: async(_,{autosId,input}) => {
+            const {titulo,descripcion,imagen,precio} = input
+
+            const  ExistenAutos = await prisma.auto.findUnique({
+                where:{
+                    id: Number(autosId)
+                }
+            })
+            if(!ExistenAutos){
+                return {
+                    userErrors:[{
+                        message:"Auto no encontrado"
+                    }],auto:null
+                }
+            }
+            let payloadToUpdate = {
+                titulo,
+                descripcion,
+                imagen,
+                precio
+            }
+            
+            return {
+                userErrors:[],
+                autos : await prisma.auto.update({
+                data:{
+                    ...payloadToUpdate
+                },
+                where:{
+                    id:Number(autosId)
+                }
+            })
+            }
+        },
+        eliminarAuto:async (_,{autosId}) => {
+            const ExisteAuto = await prisma.auto.findUnique({
+                where:{
+                    id: Number(autosId)
+                }
+            })
+            if(!ExisteAuto){
+                return{
+                    userErrors:[{
+                        message: "Auto no encontrado"
+                    }]
+                }
+            }
+            const auto = await prisma.auto.delete({
+                where:{
+                    id: Number(autosId)
+                }
+            })
+
+            return {
+                userErrors:[],
+                auto
+            }
         }
         
     },

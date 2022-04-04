@@ -3,12 +3,15 @@ const {gql} =require("apollo-server")
 const typeDefs = gql`
     type Query {
         hello:String
+        auto: [Auto]
     }
     type Mutation {
         signup(input:NuevoUsuario):AuthPayload
         singin(input:Credentials):Token
 
-        crearAuto(input:NuevoAuto):AutoPayload
+        crearAuto(input:InputAuto!):AutoPayload
+        actualizarAuto(autosId:ID!,input:InputAuto!):AutoPayload
+        eliminarAuto(autosId:ID!): AutoPayload
 
     }
     type User {
@@ -35,7 +38,7 @@ const typeDefs = gql`
         admin:      Admin
     
     }
-    input NuevoAuto{
+    input InputAuto{
         titulo:     String!
         descripcion:String!
         imagen:     String!
