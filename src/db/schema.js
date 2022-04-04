@@ -6,14 +6,42 @@ const typeDefs = gql`
     }
     type Mutation {
         signup(input:NuevoUsuario):AuthPayload
-        singin(input:Credentials):AuthSignPayload
+        singin(input:Credentials):Token
+
+        crearAuto(input:NuevoAuto):AutoPayload
+
     }
     type User {
-        name:String
-        apellido:String
-        email:String
-        password:String
+        id: ID!
+        name:String!
+        apellido:String!
+        email:String!
+        password:String!
     }
+    type Admin {
+        id:         ID!
+        name:       String!
+        email:      String!
+        apellido:   String!
+        password:   String!
+        autos:      [Auto]
+    }
+    type Auto{
+        id:         ID!
+        titulo:     String!
+        imagen:     String! 
+        descripcion:String!
+        precio:     String!
+        admin:      Admin
+    
+    }
+    input NuevoAuto{
+        titulo:     String!
+        descripcion:String!
+        imagen:     String!
+        precio:     Int!
+    }
+
     input NuevoUsuario {
         name:String
         apellido:String
@@ -25,9 +53,9 @@ const typeDefs = gql`
         email:String!
         password:String!
     }
-    type AuthSignPayload {
+    type Token {
         token:String!
-        signError: [SignError!]!
+    
     }
     type SignError{
         message:String
@@ -38,6 +66,10 @@ const typeDefs = gql`
     }
     type UserErrors {
         message:String
+    }
+    type AutoPayload {
+        userErrors: [UserErrors!]!
+        auto:Auto
     }
     `
     module.exports = typeDefs

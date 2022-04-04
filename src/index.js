@@ -4,7 +4,7 @@ const  resolvers = require("./db/resolvers")
 const  typeDefs  = require("./db/schema")
 
 
-
+require('dotenv').config({ path: '.env' });
 
 const server = new ApolloServer({
     typeDefs,

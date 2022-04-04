@@ -3,7 +3,10 @@ const prisma = new PrismaClient()
 const bcryptjs = require("bcryptjs")
 require('dotenv').config({ path: '.env' });
 
+
+
 const jwt = require('jsonwebtoken')
+
 
 const crearToken = (usuario, secreta, expiresIn) => {
     // console.log(usuario);
@@ -30,7 +33,6 @@ const resolvers = {
                     }],user:null
                 }
             }
-
             //Hashear Clave
             const hashedPassword =  await bcryptjs.hash(password,10)
             
@@ -47,9 +49,6 @@ const resolvers = {
                 userErrors:[],
                 user
             }
-
-
-
         },
         singin : async (_,{input}) => {
             const {email,password} = input
@@ -68,15 +67,32 @@ const resolvers = {
             if(!passwordCorrecto){
                 throw new Error("La clave no es correcta")
             }
-
-            return {
-               
+            return { 
                 token: crearToken(user,process.env.SECRETA, '8h')
             }
-
-
-
+        },
+        crearAuto: async (_,{input}) => {
+            const {titulo,descripcion,imagen,precio} = input
+            if(!titulo,!descripcion,!imagen,!precio){
+                return {
+                    userErrors:[{
+                        message: "Faltan datos"
+                    }]
+                }
+            }
+            const auto = await prisma.auto.create({data:{  
+                authorId:1,
+                titulo,
+                descripcion,
+                imagen,
+                precio
+            }})
+           return {
+               userErrors:[],
+               auto
+           }
         }
+        
     },
 }
 
