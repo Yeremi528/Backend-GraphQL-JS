@@ -18,14 +18,53 @@ const crearToken = (usuario, secreta, expiresIn) => {
 
 const resolvers = {
     Query:{
-        hello:() => {"hello"},
         auto: async() =>  {
             return prisma.auto.findMany({
                 where:{
                     authorId:1
                 }
             })
+        },
+        obtenerPedidos: async(_,) => {
+            return prisma.pedidos.findMany()
+        },
+        obtenerClientes: async(_,{},ctx) => {
+            try{
+                const clientes = await prisma.cliente.findMany()
+                return clientes
+            }catch (error){
+                console.log(error)
+            }
+        },
+        obtenerClienteVendedor:async (_,{},ctx) => {
+            try{
+                const clientes = await prisma.cliente.findMany({
+                    where:{
+                        userId:ctx.usuario.id
+                    }
+                })
+                return clientes
+            }catch(error){
+                console.log("Este vendedor no tiene clientes")
+            }
+        },
+        obtenerCliente: async(_, {id } ,ctx ) => {
+            //Revisar si el cliente existe o no
+            const cliente = await prisma.cliente.findUnique({
+                where:{
+                    id:Number(id)
+                }
+            })
+            if(!cliente){
+                throw new Error("Cliete no encontrado")
+            }
+            if(cliente.userId.toString() !== ctx.usuario.id) {
+                throw new Error("No tienes las credenciales");
+            }
+            return cliente
+            //Quien lo creo puede verlo
         }
+        
     },
     Mutation:{
         signup : async (_,{input}) => {
@@ -224,7 +263,90 @@ const resolvers = {
                     }]
                 }
             }
+        },
+        nuevoCliente: async(_,{input},ctx) => {
+            const {name,apellido,password,email,empresa,telefono} = input
+            console.log(ctx)
+            const existeCliente = await prisma.cliente.findUnique({
+                where:{
+                    email
+                }
+            })
+            if(existeCliente){
+                throw new Error("Usuario ya existe")
+            }
+            const cliente = await prisma.cliente.create({
+                data:{
+                    email,
+                    apellido,
+                    password,
+                    empresa,
+                    name,
+                    telefono,
+                    userId:ctx.usuario.id
+                }
+            })
+            return {
+                cliente
+            }
+            
+            
+        
+        },
+        actualizarCliente : async (_,{id,input},ctx) => {
+            const {name,apellido,empresa,email,telefono} = input
+            //Verificar si existe o no
+            let cliente = await prisma.cliente.findUnique({
+                where:{
+                    id: Number(id)
+                }
+            })
+            if(!cliente){
+                throw new Error("El cliente no fue encontrado")
+            }
+            //Verificar quien lo edita
+            if(cliente.userId.toString !== ctx.usuario.id){
+                throw new Error("No tienes las credenciales")
+            }
+
+            let payloadToUpdate = {
+                name,apellido,email,empresa,telefono
+            }
+            //Guardar el Cliente
+            const clienteActualizado= await prisma.cliente.update({
+                data:{
+                    ...payloadToUpdate
+                },
+                where:{
+                    id:Number(id)
+                }
+            })
+            return {
+                clienteActualizado
+            }
+        },
+        eliminarCliente:async(  _,{id} , ctx ) => {
+            const cliente = await prisma.cliente.findUnique({
+                where:{
+                     id: Number(id)
+                }
+            })
+            if(!cliente){
+                throw new Error("No existe el Usuario")
+            }
+            if(cliente.userId.toString !== ctx.usuario.id) {
+                throw new Error("No tienes las credenciales para hacer las modificaciones")
+            }
+
+            await prisma.cliente.delete({
+                where:{
+                    id: Number(id)
+                }
+            })
+            return "Cliente Eliminado"
         }
+
+    
         
     },
 }

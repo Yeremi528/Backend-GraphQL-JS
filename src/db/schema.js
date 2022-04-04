@@ -2,8 +2,12 @@
 const {gql} =require("apollo-server")
 const typeDefs = gql`
     type Query {
-        hello:String
+        obtenerPedidos:[Pedidos]
         auto: [Auto]
+
+        obtenerClientes: [Cliente]
+        obtenerClienteVendedor: [Cliente]
+        obtenerCliente(id:ID):Cliente
     }
     type Mutation {
         signup(input:NuevoUsuario):AuthPayload
@@ -16,6 +20,10 @@ const typeDefs = gql`
         crearPedido(input:InputPedido):PedidoPayload
         actualizarPedido(pedidoId:ID,input:InputPedido):PedidoPayload
         eliminarPedido(pedidoId:ID):PedidoPayload
+
+        nuevoCliente(input:ClienteInput):ClientePayload
+        actualizarCliente(id:ID!, input:ClienteInput):Cliente
+        eliminarCliente(id:ID) :String
     }
     type User {
         id: ID!
@@ -33,7 +41,7 @@ const typeDefs = gql`
         empresa:String!
         email:String!
         pedidos: [Pedidos]
-        vendedor:ID
+        userId:ID
         
     }
     type Pedidos {
@@ -62,6 +70,14 @@ const typeDefs = gql`
         titulo:String
         contenido:String
         precio:Int
+    }
+    input ClienteInput {
+        name:String
+        apellido:String
+        empresa:String
+        email:String
+        telefono:String
+         
     }
 
     input NuevoUsuario {
@@ -96,6 +112,10 @@ const typeDefs = gql`
     type PedidoPayload {
         userErrors: [UserErrors!]!
         pedidos:Pedidos
+    }
+    type ClientePayload {
+        
+        cliente:Cliente
     }
     `
     module.exports = typeDefs

@@ -43,6 +43,8 @@ model Cliente {
   apellido  String
   email     String    @unique
   pedidos   Pedidos[]
-  userId    Int       
+  userId    Int
+  empresa   String
+  telefono  String       
   user      User  @relation(fields: [userId], references: [id])
 }
