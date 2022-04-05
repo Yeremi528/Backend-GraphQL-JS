@@ -17,6 +17,7 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  pedidos   Pedidos[]
   autos     Auto[]
   cliente   Cliente[]
 }
@@ -29,7 +30,7 @@ model Auto {
   authorId     Int     
   author       User   @relation(fields: [authorId],references: [id])
 }
-model Pedidos {
+model Productos {
   id        Int    @id  @default(autoincrement())
   titulo    String
   contenido String
@@ -38,13 +39,24 @@ model Pedidos {
   cliente Cliente  @relation(fields: [clienteId], references: [id])
 }
 model Cliente {
-  id        Int      @id @default(autoincrement())
-  name      String
-  apellido  String
-  email     String    @unique
-  pedidos   Pedidos[]
-  userId    Int
-  empresa   String
-  telefono  String       
-  user      User  @relation(fields: [userId], references: [id])
+  id          Int      @id @default(autoincrement())
+  name        String
+  apellido    String
+  email       String    @unique
+  pedidos     Pedidos[] 
+  productos   Productos[]
+  userId      Int
+  empresa     String
+  telefono    String       
+  user        User  @relation(fields: [userId], references: [id])
+}
+model Pedidos {
+  id          Int     @id @default(autoincrement())
+  total       Int
+  clienteId   Int
+  cliente     Cliente @relation(fields: [clienteId],references: [id])
+  userId      Int 
+  user        User    @relation(fields: [userId],references: [id])
+  estado      String  @default("Pendiente")
+  creado      DateTime  @default(now())
 }

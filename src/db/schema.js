@@ -2,7 +2,7 @@
 const {gql} =require("apollo-server")
 const typeDefs = gql`
     type Query {
-        obtenerPedidos:[Pedidos]
+        obtenerProductos:[Productos]
         auto: [Auto]
 
         obtenerClientes: [Cliente]
@@ -17,9 +17,9 @@ const typeDefs = gql`
         actualizarAuto(autosId:ID!,input:InputAuto!):AutoPayload
         eliminarAuto(autosId:ID!): AutoPayload
 
-        crearPedido(input:InputPedido):PedidoPayload
-        actualizarPedido(pedidoId:ID,input:InputPedido):PedidoPayload
-        eliminarPedido(pedidoId:ID):PedidoPayload
+        crearProducto(input:InputProducto):ProductoPayload
+        actualizarProducto(productoId:ID,input:InputProducto):ProductoPayload
+        eliminarProducto(productoId:ID):ProductoPayload
 
         nuevoCliente(input:ClienteInput):ClientePayload
         actualizarCliente(id:ID!, input:ClienteInput):Cliente
@@ -40,11 +40,11 @@ const typeDefs = gql`
         telefono:String!
         empresa:String!
         email:String!
-        pedidos: [Pedidos]
+        productos: [Productos]
         userId:ID
         
     }
-    type Pedidos {
+    type Productos {
         id:ID
         titulo:String
         contenido:String
@@ -66,7 +66,7 @@ const typeDefs = gql`
         imagen:     String!
         precio:     Int!
     }
-    input InputPedido{
+    input InputProducto{
         titulo:String
         contenido:String
         precio:Int
@@ -109,9 +109,9 @@ const typeDefs = gql`
         userErrors: [UserErrors!]!
         auto:Auto
     }
-    type PedidoPayload {
+    type ProductoPayload {
         userErrors: [UserErrors!]!
-        pedidos:Pedidos
+        productos:Productos
     }
     type ClientePayload {
         

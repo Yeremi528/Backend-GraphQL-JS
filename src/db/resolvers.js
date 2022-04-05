@@ -25,9 +25,15 @@ const resolvers = {
                 }
             })
         },
-        obtenerPedidos: async(_,) => {
-            return prisma.pedidos.findMany()
+        obtenerProductos: async(_,) => {
+            try{
+                const productos = await prisma.productos.findMany()
+                return productos
+            }catch (error){
+                console.log(error)
+            }
         },
+
         obtenerClientes: async(_,{},ctx) => {
             try{
                 const clientes = await prisma.cliente.findMany()
@@ -199,7 +205,7 @@ const resolvers = {
                 auto
             }
         },
-        crearPedido: async (_,{input}) => {
+        crearProducto: async (_,{input}) => {
             const {titulo,contenido,precio} = input
             if(!titulo && !contenido && !precio){
                 return{
@@ -211,7 +217,7 @@ const resolvers = {
 
             return {
                 userErrors:[],
-                pedidos: prisma.pedidos.create({
+                productos: prisma.productos.create({
                     data:{
                         contenido,
                         precio,
@@ -221,17 +227,17 @@ const resolvers = {
                 })
             }
         },
-        actualizarPedido: async(_,{pedidoId,input}) => {
+        actualizarProducto: async(_,{productoId,input}) => {
             const {titulo,contenido,precio} = input
-            const buscarPedido = await prisma.pedidos.findUnique({
+            const buscarProducto = await prisma.productos.findUnique({
                 where:{
-                    id: Number(pedidoId)
+                    id: Number(productoId)
                 }
             })
-            if(!buscarPedido){
+            if(!buscarProducto){
                 return{
                     userErrors:[{
-                        message:"Pedido no encontrado"
+                        message:"Producto no encontrado"
                     }]
                 }
             }
@@ -240,26 +246,26 @@ const resolvers = {
             }
             return{
                 userErrors:[],
-                pedidos: prisma.pedidos.update({
+                productos: prisma.productos.update({
                     data:{
                         ...payloadUpdate
                     },
                     where:{
-                        id:Number(pedidoId)
+                        id:Number(productoId)
                     }
                 })
             }  
         },
-        eliminarPedido:async(_,{pedidoId}) => {
-            const buscarPedido = await prisma.pedidos.findUnique({
+        eliminarProducto:async(_,{productoId}) => {
+            const buscarProducto = await prisma.productos.findUnique({
                 where:{
-                    id: Number(pedidoId)
+                    id: Number(productoId)
                 }
             })
-            if(!buscarPedido){
+            if(!buscarProducto){
                 return{
                     userErrors:[{
-                        message: "Pedido no existente"
+                        message: "Producto no existente"
                     }]
                 }
             }
